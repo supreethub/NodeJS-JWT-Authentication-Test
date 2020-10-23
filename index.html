@@ -59,8 +59,11 @@
       }
 
       function getDashboard() {
-          history.pushState(null, null, "dashboard");
+          
         const token = localStorage.getItem("jwt");
+        if(new Date().getTime()>token * 1000) {
+              login(); 
+          }
         axios
           .get("/api/dashboard", {
             headers: {
@@ -69,6 +72,7 @@
           })
           .then((res) => {
             if (res && res.data && res.data.success) {
+              history.pushState(null, null, "dashboard");
               document.querySelector("h1.row").innerHTML = "Dashboard";
               document.querySelector("main").innerHTML = res.data.myContent;
             }
@@ -76,8 +80,11 @@
       }
 
       function getSettings() {
-          history.pushState(null,null,"settings");
+          
         const token = localStorage.getItem("jwt");
+        if(new Date().getTime()>token * 1000) {
+              login(); 
+          }
         axios
           .get("/api/settings", {
             headers: {
@@ -86,6 +93,7 @@
           })
           .then((res) => {
             if (res && res.data && res.data.success) {
+              history.pushState(null,null,"settings");
               document.querySelector("h1.row").innerHTML = "Settings";
               document.querySelector("main").innerHTML = res.data.myContent;
             }
@@ -96,14 +104,32 @@
     //     console.log(e);
     //   });
 
-      function onLoad() {
-          const token = localStorage.getItem('jwt');
-          if(new Date().getTime()>token * 1000) {
-              login(); 
-          }
+      // function onLoad() {
+      //     const token = localStorage.getItem('jwt');
+      //     if(new Date().getTime()>token * 1000) {
+      //         alert("Session expired. Login to continue."); 
+      //     }
           
-      }
-      onLoad();
+      // }
+      // onLoad();
+
+      var setToken = 1;
+      setInterval(function () {
+        const token = localStorage.getItem("jwt");
+        if (token != null) {
+          var exp = JSON.parse(atob(token.split('.')[1])).exp;
+          if (new Date().getTime() > exp * 1000) {
+            setToken=0;
+            alert("Session has expired, Please Login");
+            localStorage.clear();
+            window.location.replace("http://localhost:3000/");
+          }
+          if (setToken==1 && new Date().getTime() + 30000 > exp * 1000) {
+            setToken=0;
+            alert("Session will expire in 30 seconds");
+          }
+        }
+      }, 3000);
     </script>
   </body>
 </html>

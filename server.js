@@ -19,8 +19,9 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 
-
 const PORT = 3000;
+
+
 
 const secretKey = 'My super secret key';
 const jwtMW = exjwt({
@@ -55,14 +56,12 @@ app.post('/api/login', (req, res) => {
             });
             break;
         }
-        else {
+    }
             res.status(401).json({
                 success: false,
                 token: null,
                 err: 'Username or password incorrect'
             });
-        }
-    }
 });
 
 app.get('/api/dashboard', jwtMW, (req, res) => {
